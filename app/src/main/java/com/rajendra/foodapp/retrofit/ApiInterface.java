@@ -9,8 +9,8 @@ import retrofit2.http.GET;
 
 public interface ApiInterface {
 
-    @GET("fooddata.json")
-    Call<List<FoodData>> getAllData();
+    @GET("CKVpcp")
+    Call<FoodData> getAllData();
 
 
     // lets make our model class of json data.

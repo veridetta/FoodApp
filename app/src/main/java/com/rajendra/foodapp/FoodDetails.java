@@ -40,7 +40,7 @@ public class FoodDetails extends AppCompatActivity {
 
         Glide.with(getApplicationContext()).load(imageUrl).into(imageView);
         itemName.setText(name);
-        itemPrice.setText("₹ "+price);
+        itemPrice.setText(price);
         itemRating.setText(rating);
         ratingBar.setRating(Float.parseFloat(rating));
 

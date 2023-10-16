@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.rajendra.foodapp.adapter.AllMenuAdapter;
@@ -40,19 +41,17 @@ public class MainActivity extends AppCompatActivity {
 
         apiInterface = RetrofitClient.getRetrofitInstance().create(ApiInterface.class);
 
-        Call<List<FoodData>> call = apiInterface.getAllData();
-        call.enqueue(new Callback<List<FoodData>>() {
+        Call<FoodData> call = apiInterface.getAllData();
+        Log.d("TAG", "onResponse: "+call.request().url());
+        call.enqueue(new Callback<FoodData>() {
             @Override
-            public void onResponse(Call<List<FoodData>> call, Response<List<FoodData>> response) {
-
-                List<FoodData> foodDataList = response.body();
-
-
-                getPopularData(foodDataList.get(0).getPopular());
-
-                getRecommendedData(foodDataList.get(0).getRecommended());
-
-                getAllMenu(foodDataList.get(0).getAllmenu());
+            public void onResponse(Call<FoodData> call, Response<FoodData> response) {
+                Log.d("TAG", response.code()+"");
+                Log.d("TAG", response.body()+"");
+                FoodData foodData = response.body();
+                getPopularData(foodData.getPopular());
+                getRecommendedData(foodData.getRecommended());
+                getAllMenu(foodData.getAllmenu());
                 // lets run it.
                 // we have fetched data from server.
                 // now we have to show data in app using recycler view
@@ -65,7 +64,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<FoodData>> call, Throwable t) {
+            public void onFailure(Call<FoodData> call, Throwable t) {
+                Log.e("TAG", "Request failed: " + t.getMessage());
                 Toast.makeText(MainActivity.this, "Server is not responding.", Toast.LENGTH_SHORT).show();
             }
         });

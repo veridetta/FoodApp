@@ -1,5 +1,6 @@
 package com.rajendra.foodapp.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -35,12 +36,23 @@ public class AllMenuAdapter extends RecyclerView.Adapter<AllMenuAdapter.AllMenuV
 
         return new AllMenuViewHolder(view);
     }
+    private double convertToDollar(String priceInRupiah, double exchangeRate) {
+        // Hapus "Rp " dan koma jika ada, lalu ubah ke tipe data double
+        double priceInRupiahDouble = Double.parseDouble(priceInRupiah.replace("Rp ", "").replace(",", ""));
+
+        // Konversi ke dolar dengan nilai tukar mata uang yang ditentukan
+        double priceInDollar = priceInRupiahDouble / exchangeRate;
+
+        // Pembulatan harga ke 2 desimal
+        return Math.round(priceInDollar * 100.0) / 100.0;
+    }
 
     @Override
-    public void onBindViewHolder(@NonNull AllMenuViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull AllMenuViewHolder holder, @SuppressLint("RecyclerView") final int position) {
 
         holder.allMenuName.setText(allmenuList.get(position).getName());
-        holder.allMenuPrice.setText("₹ "+allmenuList.get(position).getPrice());
+
+        holder.allMenuPrice.setText("$"+convertToDollar(allmenuList.get(position).getPrice(), 15000));
         holder.allMenuTime.setText(allmenuList.get(position).getDeliveryTime());
         holder.allMenuRating.setText(allmenuList.get(position).getRating());
         holder.allMenuCharges.setText(allmenuList.get(position).getDeliveryCharges());
@@ -54,7 +66,7 @@ public class AllMenuAdapter extends RecyclerView.Adapter<AllMenuAdapter.AllMenuV
             public void onClick(View view) {
                 Intent i = new Intent(context, FoodDetails.class);
                 i.putExtra("name", allmenuList.get(position).getName());
-                i.putExtra("price", allmenuList.get(position).getPrice());
+                i.putExtra("price", "$"+convertToDollar(allmenuList.get(position).getPrice(), 15000));
                 i.putExtra("rating", allmenuList.get(position).getRating());
                 i.putExtra("image", allmenuList.get(position).getImageUrl());
 

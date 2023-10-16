@@ -1,5 +1,6 @@
 package com.rajendra.foodapp.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -34,15 +35,25 @@ public class RecommendedAdapter extends RecyclerView.Adapter<RecommendedAdapter.
         View view = LayoutInflater.from(context).inflate(R.layout.recommended_recycler_items, parent, false);
         return new RecommendedViewHolder(view);
     }
+    private double convertToDollar(String priceInRupiah, double exchangeRate) {
+        // Hapus "Rp " dan koma jika ada, lalu ubah ke tipe data double
+        double priceInRupiahDouble = Double.parseDouble(priceInRupiah.replace("Rp ", "").replace(",", ""));
+
+        // Konversi ke dolar dengan nilai tukar mata uang yang ditentukan
+        double priceInDollar = priceInRupiahDouble / exchangeRate;
+
+        // Pembulatan harga ke 2 desimal
+        return Math.round(priceInDollar * 100.0) / 100.0;
+    }
 
     @Override
-    public void onBindViewHolder(@NonNull RecommendedViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull RecommendedViewHolder holder, @SuppressLint("RecyclerView") final int position) {
 
         holder.recommendedName.setText(recommendedList.get(position).getName());
         holder.recommendedRating.setText(recommendedList.get(position).getRating());
         holder.recommendedCharges.setText(recommendedList.get(position).getDeliveryCharges());
         holder.recommendedDeliveryTime.setText(recommendedList.get(position).getDeliveryTime());
-        holder.recommendedPrice.setText("₹ "+recommendedList.get(position).getPrice());
+        holder.recommendedPrice.setText("$"+convertToDollar(recommendedList.get(position).getPrice(), 15000));
 
         Glide.with(context).load(recommendedList.get(position).getImageUrl()).into(holder.recommendedImage);
 
@@ -51,7 +62,7 @@ public class RecommendedAdapter extends RecyclerView.Adapter<RecommendedAdapter.
             public void onClick(View view) {
                 Intent i = new Intent(context, FoodDetails.class);
                 i.putExtra("name", recommendedList.get(position).getName());
-                i.putExtra("price", recommendedList.get(position).getPrice());
+                i.putExtra("price", "$"+convertToDollar(recommendedList.get(position).getPrice(), 15000));
                 i.putExtra("rating", recommendedList.get(position).getRating());
                 i.putExtra("image", recommendedList.get(position).getImageUrl());
 
